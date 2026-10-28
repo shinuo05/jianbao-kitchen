@@ -109,6 +109,7 @@ async function enterKitchen(session){
   }catch(e){lockKitchen(e.message);}
 }
 async function initCloud(){
+  document.querySelector('#loginForm').onsubmit=e=>e.preventDefault();
   lockKitchen();
   const cfg=window.KITCHEN_CONFIG||{};
   if(!cfg.supabaseUrl||!cfg.supabaseKey){
@@ -116,7 +117,7 @@ async function initCloud(){
     document.querySelector('#loginButton').disabled=true;return;
   }
   if(!window.supabase){document.querySelector('#authMessage').textContent='云端组件未加载，请检查网络后刷新。';return;}
-  try{cloud=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey);}catch{lockKitchen('config.js 配置格式不正确');return;}
+  try{cloud=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey);}catch(e){lockKitchen('登录组件初始化失败：'+e.message);return;}
   cloud.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_OUT'||!session)lockKitchen();});
   document.querySelector('#loginForm').onsubmit=async e=>{
     e.preventDefault();const button=document.querySelector('#loginButton');button.disabled=true;
